@@ -33,6 +33,10 @@ var encoderOptions = []zstd.EOption{
 	// The default zstd window size is 8MB, which is much larger than the
 	// typical RPC message and wastes a bunch of memory.
 	zstd.WithWindowSize(512 * 1024),
+	// Since we only use the stateless EncodeAll method, we don't need the
+	// background goroutines that the encoder spawns for streaming. Without
+	// this, the encoder spawns GOMAXPROCS goroutines that are never used.
+	zstd.WithEncoderConcurrency(1),
 }
 
 var decoderOptions = []zstd.DOption{
@@ -42,10 +46,38 @@ var decoderOptions = []zstd.DOption{
 	zstd.WithDecoderConcurrency(1),
 }
 
-// We will set a finalizer on these objects, so when the go-grpc code is
-// finished with them, they will be added back to compressor.decoderPool.
+// decoderWrapper returns the decoder to the pool eagerly on EOF (the normal
+// read completion path), rather than deferring to a GC finalizer. This avoids
+// accumulating idle decoders and their history buffers between GC cycles.
+// The finalizer is kept as a safety net for abandoned readers (e.g. error
+// paths where gRPC discards the reader before reaching EOF).
+//
+// The decoder is stored as a named field (not embedded) to avoid promoting
+// *zstd.Decoder.Close(), which would make decoderWrapper satisfy io.Closer.
+// If a consumer called Close(), the decoder would be permanently unusable
+// and could never be returned to the pool.
 type decoderWrapper struct {
-	*zstd.Decoder
+	decoder  *zstd.Decoder
+	pool     *sync.Pool
+	returned bool
+}
+
+func (dw *decoderWrapper) Read(p []byte) (int, error) {
+	n, err := dw.decoder.Read(p)
+	if err == io.EOF {
+		dw.returnToPool()
+	}
+	return n, err
+}
+
+func (dw *decoderWrapper) returnToPool() {
+	if dw.returned {
+		return
+	}
+	dw.returned = true
+	if err := dw.decoder.Reset(nil); err == nil {
+		dw.pool.Put(dw.decoder)
+	}
 }
 
 type compressor struct {
@@ -76,11 +108,12 @@ func SetLevel(level zstd.EncoderLevel) error {
 		return ErrNotInUse
 	}
 
-	enc, err := zstd.NewWriter(nil, zstd.WithEncoderLevel(level))
+	enc, err := zstd.NewWriter(nil, append(encoderOptions, zstd.WithEncoderLevel(level))...)
 	if err != nil {
 		return err
 	}
 
+	c.encoder.Close()
 	c.encoder = enc
 	return nil
 }
@@ -130,12 +163,12 @@ func (c *compressor) Decompress(r io.Reader) (io.Reader, error) {
 		}
 	}
 
-	wrapper := &decoderWrapper{Decoder: decoder}
+	wrapper := &decoderWrapper{
+		decoder: decoder,
+		pool:    &c.decoderPool,
+	}
 	runtime.SetFinalizer(wrapper, func(dw *decoderWrapper) {
-		err := dw.Reset(nil)
-		if err == nil {
-			c.decoderPool.Put(dw.Decoder)
-		}
+		dw.returnToPool()
 	})
 
 	return wrapper, nil

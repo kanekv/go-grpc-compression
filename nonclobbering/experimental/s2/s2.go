@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package github.com/mostynb/go-grpc-compression/nonclobbering/experimental/s2
+// Package github.com/kanekv/go-grpc-compression/nonclobbering/experimental/s2
 // is a wrapper for using github.com/klauspost/compress/s2 stream compression
 // with gRPC.
 //
@@ -22,11 +22,11 @@
 //
 // If you do want to override previously registered "s2" compressors,
 // then you should instead import
-// github.com/mostynb/go-grpc-compression/experimental/s2
+// github.com/kanekv/go-grpc-compression/experimental/s2
 package s2
 
 import (
-	internals2 "github.com/mostynb/go-grpc-compression/internal/s2"
+	internals2 "github.com/kanekv/go-grpc-compression/internal/s2"
 )
 
 const Name = internals2.Name

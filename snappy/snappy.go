@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package github.com/mostynb/go-grpc-compression/snappy is a wrapper for
+// Package github.com/kanekv/go-grpc-compression/snappy is a wrapper for
 // using github.com/golang/snappy with gRPC.
 //
 // If you import this package, it will register itself as the encoder for
@@ -21,11 +21,11 @@
 //
 // If you don't want to override previously registered "snappy" compressors,
 // then you should instead import
-// github.com/mostynb/go-grpc-compression/nonclobbering/snappy
+// github.com/kanekv/go-grpc-compression/nonclobbering/snappy
 package snappy
 
 import (
-	internalsnappy "github.com/mostynb/go-grpc-compression/internal/snappy"
+	internalsnappy "github.com/kanekv/go-grpc-compression/internal/snappy"
 )
 
 const Name = internalsnappy.Name

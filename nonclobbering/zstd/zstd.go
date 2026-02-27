@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package github.com/mostynb/go-grpc-compression/nonclobbering/zstd is a
+// Package github.com/kanekv/go-grpc-compression/nonclobbering/zstd is a
 // wrapper for using github.com/klauspost/compress/zstd with gRPC.
 //
 // If you import this package, it will only register itself as the encoder
@@ -21,11 +21,11 @@
 //
 // If you do want to override previously registered "zstd" compressors,
 // then you should instead import
-// github.com/mostynb/go-grpc-compression/zstd
+// github.com/kanekv/go-grpc-compression/zstd
 package zstd
 
 import (
-	internalzstd "github.com/mostynb/go-grpc-compression/internal/zstd"
+	internalzstd "github.com/kanekv/go-grpc-compression/internal/zstd"
 
 	"github.com/klauspost/compress/zstd"
 )

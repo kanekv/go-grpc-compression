@@ -21,13 +21,13 @@ import (
 
 	// This import happens first for the test, keep it ahead of
 	// the three unnamed imports below.
-	"github.com/mostynb/go-grpc-compression/internal/deptest/testlib"
+	"github.com/kanekv/go-grpc-compression/internal/deptest/testlib"
 
 	// If these were moved above, the test would fail because
 	// testlib has the same no-clobber logic as the main packages.
-	_ "github.com/mostynb/go-grpc-compression/nonclobbering/lz4"
-	_ "github.com/mostynb/go-grpc-compression/nonclobbering/snappy"
-	_ "github.com/mostynb/go-grpc-compression/nonclobbering/zstd"
+	_ "github.com/kanekv/go-grpc-compression/nonclobbering/lz4"
+	_ "github.com/kanekv/go-grpc-compression/nonclobbering/snappy"
+	_ "github.com/kanekv/go-grpc-compression/nonclobbering/zstd"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/encoding"

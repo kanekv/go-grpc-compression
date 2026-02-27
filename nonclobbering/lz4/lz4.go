@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package github.com/mostynb/go-grpc-compression/nonclobbering/lz4 is a
+// Package github.com/kanekv/go-grpc-compression/nonclobbering/lz4 is a
 // wrapper for using github.com/pierrec/lz4 with gRPC.
 //
 // If you import this package, it will only register itself as the encoder
@@ -21,11 +21,11 @@
 //
 // If you do want to override previously registered "lz4" compressors,
 // then you should instead import
-// github.com/mostynb/go-grpc-compression/lz4
+// github.com/kanekv/go-grpc-compression/lz4
 package lz4
 
 import (
-	internallz4 "github.com/mostynb/go-grpc-compression/internal/lz4"
+	internallz4 "github.com/kanekv/go-grpc-compression/internal/lz4"
 )
 
 const Name = internallz4.Name

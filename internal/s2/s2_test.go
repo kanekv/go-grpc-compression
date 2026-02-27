@@ -28,7 +28,7 @@ import (
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/test/bufconn"
 
-	"github.com/mostynb/go-grpc-compression/internal/testserver"
+	"github.com/kanekv/go-grpc-compression/internal/testserver"
 )
 
 const (
